@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Book Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-lg border-b-4 border-blue-600 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                        <i class="fas fa-book-open text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">E-Book Library</h1>
+                </div>
+               
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <h2 class="text-4xl font-extrabold mb-3 flex items-center justify-center space-x-3">
+                    <i class="fas fa-books text-blue-200"></i>
+                    <span>Welcome to Electronic Librarry SMAN 3 Singaraja</span>
+                </h2>
+                <p class="text-lg text-blue-100 max-w-2xl mx-auto">Temukan cerpen favoritmu!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-20">
+            <div class="inline-flex flex-col items-center space-y-4">
+                <div class="relative">
+                    <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                    <i class="fas fa-book absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-600"></i>
+                </div>
+                <p class="text-gray-600 font-medium">Memuat koleksi buku...</p>
+            </div>
+        </div>
+
+        <!-- Book Grid -->
+        <div id="ebook-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-3">
+                    <i class="fas fa-book-reader text-blue-600 text-xl"></i>
+                    <p class="text-gray-600 font-medium">ELIB-SMANTIARA</p>
+                </div>
+                <p class="text-sm text-gray-500">© AM SMANTIARA 2025.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const listContainer = document.getElementById('ebook-list');
+            const loadingIndicator = document.getElementById('loading');
+
+            const fetchBooks = async () => {
+                try {
+                    const response = await fetch('/api/public/books');
+                    if (!response.ok) throw new Error('Gagal mengambil data');
+                    
+                    const books = await response.json();
+                    loadingIndicator.style.display = 'none';
+                    
+                    if (books.length === 0) {
+                        listContainer.innerHTML = `
+                            <div class="col-span-full py-20 text-center">
+                                <div class="inline-flex flex-col items-center space-y-4">
+                                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-inbox text-gray-400 text-4xl"></i>
+                                    </div>
+                                    <p class="text-gray-500 text-lg font-medium">Belum ada buku yang ditambahkan</p>
+                                    <p class="text-gray-400 text-sm">Koleksi akan segera hadir</p>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    books.forEach(book => {
+                        const card = `
+                            <div class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200">
+                                <!-- Thumbnail Container -->
+                                <div class="relative h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                                    <img class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" 
+                                         src="${book.thumbnail_base64}" 
+                                         alt="${book.title}">
+                                    
+                                    <!-- Overlay -->
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <a href="${book.pdf_url}" 
+                                               target="_blank" 
+                                               rel="noopener noreferrer" 
+                                               class="px-6 py-3 bg-white text-blue-600 font-bold rounded-full shadow-xl transform scale-90 group-hover:scale-100 transition-all duration-300 hover:bg-blue-50 flex items-center space-x-2">
+                                                <i class="fas fa-book-open"></i>
+                                                <span>Baca Sekarang</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Badge -->
+                                    <div class="absolute top-3 right-3 px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center space-x-1">
+                                        <i class="fas fa-file-pdf"></i>
+                                        <span>PDF</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Content -->
+                                <div class="p-5">
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors duration-200">
+                                        ${book.title}
+                                    </h3>
+                                    <p class="text-sm text-gray-600 line-clamp-2 mb-4 min-h-[40px]">
+                                        ${book.description || 'Buku ini menyediakan konten berkualitas untuk pembelajaran Anda.'}
+                                    </p>
+                                    
+                                    <!-- Action Button -->
+                                    <a href="${book.pdf_url}" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="w-full inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                                        <i class="fas fa-arrow-right"></i>
+                                        <span>Lihat Detail</span>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                        listContainer.innerHTML += card;
+                    });
+
+                } catch (error) {
+                    loadingIndicator.style.display = 'none';
+                    listContainer.innerHTML = `
+                        <div class="col-span-full py-20 text-center">
+                            <div class="inline-flex flex-col items-center space-y-4">
+                                <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation-circle text-red-500 text-4xl"></i>
+                                </div>
+                                <p class="text-red-600 text-lg font-medium">${error.message}</p>
+                                <button onclick="location.reload()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                                    <i class="fas fa-redo"></i>
+                                    <span>Coba Lagi</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            };
+
+            fetchBooks();
+        });
+    </script>
+</body>
+</html>
