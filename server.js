@@ -4,11 +4,15 @@ const cookieParser = require('cookie-parser');
 const { Pool } = require('pg');
 const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
+const cors = require('cors');
 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://am-smantiara2025.vercel.app'],
+  credentials: true,
+}));
 // Inisialisasi Koneksi Database NeonDB
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
