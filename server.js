@@ -5,6 +5,7 @@ const { Pool } = require('pg');
 const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -245,9 +246,9 @@ app.delete('/api/books/:id', authMiddleware, async (req, res) => {
     }
 });
 
-
+module.exports = app; // aktifan jika deploy
 // Start Server
-app.listen(PORT, async () => {
-    await createTable(); 
-    console.log(`Server berjalan di http://localhost:${PORT}`);
-});
+// app.listen(PORT, async () => {
+//     await createTable(); 
+//     console.log(`Server berjalan di http://localhost:${PORT}`);
+// });
